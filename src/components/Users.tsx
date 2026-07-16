@@ -1,16 +1,16 @@
 import { useEffect } from "react";
-import { useAppDispatch, useAppSelector } from "../hooks/reduxhooks";
+import { useDispatch, useSelector } from "react-redux";
 import { fetchUsers } from "../features/userslice";
 
 const Users = () => {
-  const dispatch = useAppDispatch();
+  const dispatch = useDispatch();
 
-  const { users, loading, error } = useAppSelector(
-    (state) => state.users
+  const { users, loading, error } = useSelector(
+    (state: any) => state.users
   );
 
   useEffect(() => {
-    dispatch(fetchUsers());
+    dispatch(fetchUsers() as any);
   }, [dispatch]);
 
   if (loading) {

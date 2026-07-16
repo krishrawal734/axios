@@ -1,5 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
-import userReducer from "./features/userslice";
+import userReducer from "../features/userslice";
 
 export const store = configureStore({
   reducer: {
@@ -7,8 +7,5 @@ export const store = configureStore({
   },
 });
 
-// Type for the entire Redux state
 export type RootState = ReturnType<typeof store.getState>;
-
-// Type for dispatch
 export type AppDispatch = typeof store.dispatch;

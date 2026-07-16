@@ -4,17 +4,32 @@ import axios from "axios";
 // API URL
 const API_URL = "https://jsonplaceholder.typicode.com/users";
 
-// API Fetch Function
+// User Type
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+}
+
+// State Type
+interface UserState {
+  loading: boolean;
+  users: User[];
+  error: string;
+}
+
+// API Call
 export const fetchUsers = createAsyncThunk(
   "users/fetchUsers",
   async () => {
-    const response = await axios.get(API_URL);
+    const response = await axios.get<User[]>(API_URL);
     return response.data;
   }
 );
 
 // Initial State
-const initialState = {
+const initialState: UserState = {
   loading: false,
   users: [],
   error: "",
@@ -28,20 +43,16 @@ const userSlice = createSlice({
 
   extraReducers: (builder) => {
     builder
-
-      // Loading
       .addCase(fetchUsers.pending, (state) => {
         state.loading = true;
       })
 
-      // Success
       .addCase(fetchUsers.fulfilled, (state, action) => {
         state.loading = false;
         state.users = action.payload;
         state.error = "";
       })
 
-      // Error
       .addCase(fetchUsers.rejected, (state) => {
         state.loading = false;
         state.error = "Something went wrong!";
