@@ -1,41 +1,36 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
-// API URL
-const API_URL = "https://jsonplaceholder.typicode.com/users";
+import API from "./userAPI";
+import type { User, UserState } from "./usertypes";
 
-// User Type
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  phone: string;
-}
 
-// State Type
-interface UserState {
-  loading: boolean;
-  users: User[];
-  error: string;
-}
+export const fetchUsers = createAsyncThunk<
+  User[],
+  void,
+  { rejectValue: string }
+>("users/fetchUsers", async (_, thunkAPI) => {
+  try {
+    const response = await API.get<User[]>("/users");
 
-// API Call
-export const fetchUsers = createAsyncThunk(
-  "users/fetchUsers",
-  async () => {
-    const response = await axios.get<User[]>(API_URL);
     return response.data;
-  }
-);
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      return thunkAPI.rejectWithValue(
+        error.message || "Axios request failed."
+      );
+    }
 
-// Initial State
+    return thunkAPI.rejectWithValue("Something went wrong.");
+  }
+});
+
 const initialState: UserState = {
   loading: false,
   users: [],
   error: "",
 };
 
-// Slice
 const userSlice = createSlice({
   name: "users",
   initialState,
@@ -45,17 +40,18 @@ const userSlice = createSlice({
     builder
       .addCase(fetchUsers.pending, (state) => {
         state.loading = true;
+        state.error = "";
       })
 
       .addCase(fetchUsers.fulfilled, (state, action) => {
         state.loading = false;
         state.users = action.payload;
-        state.error = "";
       })
 
-      .addCase(fetchUsers.rejected, (state) => {
+      .addCase(fetchUsers.rejected, (state, action) => {
         state.loading = false;
-        state.error = "Something went wrong!";
+        state.error =
+          action.payload || "Failed to fetch users.";
       });
   },
 });
