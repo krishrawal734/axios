@@ -7,9 +7,7 @@ import type { AppDispatch, RootState } from "../app/store";
 const Users = () => {
   const dispatch = useDispatch<AppDispatch>();
 
-  const { users, loading, error } = useSelector(
-    (state: RootState) => state.users
-  );
+  const { users, loading, error } = useSelector((state: RootState) => state);
 
   useEffect(() => {
     dispatch(fetchUsers());
